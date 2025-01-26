@@ -36,6 +36,16 @@ require("formatter").setup({
 				}
 			end,
 		},
+		solidity = {
+			function () 
+				return {
+					exe = "npx",
+					args = { "prettier --plugin=prettier-plugin-solidity --stdin-filepath", vim.api.nvim_buf_get_name(0) },
+					stdin = true,
+				}
+			end
+		
+		}
 	},
 })
 
