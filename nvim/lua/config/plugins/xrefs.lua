@@ -1,4 +1,15 @@
-local function jump_to_location(result, method)
+local function get_offset_encoding()
+	local bufnr = vim.api.nvim_get_current_buf()
+	local clients = vim.lsp.get_clients({ bufnr = bufnr })
+	for _, client in ipairs(clients) do
+		if client.offset_encoding then
+			return client.offset_encoding
+		end
+	end
+	return "utf-16"
+end
+
+local function jump_to_location(result, method, position_encoding)
 	if not result or vim.tbl_isempty(result) then
 		print("No " .. method .. " found")
 		return
@@ -6,32 +17,27 @@ local function jump_to_location(result, method)
 
 	local location = result[1]
 	local uri = location.uri or location.targetUri
-	local bufnr = vim.uri_to_bufnr(uri)
-	local current_bufnr = vim.api.nvim_get_current_buf()
-
-	-- If the definition or type definition is in another file, open it in a new tab
-	if bufnr ~= current_bufnr then
-		vim.cmd("tabnew")
-		vim.lsp.util.jump_to_location(result[1])
-	else
-		-- Otherwise, just jump to the location in the same file
-		vim.lsp.util.jump_to_location(result[1])
-	end
+	local opts = { focus = true, reuse_win = true }
+	vim.lsp.util.show_document(result[1], position_encoding, opts)
 end
 
 -- Jump to definition, opening a new tab if needed
 function go_to_definition()
-	local params = vim.lsp.util.make_position_params()
+	local winid = vim.api.nvim_get_current_win()
+	local position_encoding = get_offset_encoding()
+	local params = vim.lsp.util.make_position_params(winid, position_encoding) 
 	vim.lsp.buf_request(0, "textDocument/definition", params, function(_, result, _, _)
-		jump_to_location(result, "definition")
+		jump_to_location(result, "definition", position_encoding)
 	end)
 end
 
 -- Jump to type definition, opening a new tab if needed
 function go_to_type_definition()
-	local params = vim.lsp.util.make_position_params()
+	local winid = vim.api.nvim_get_current_win()
+	local position_encoding = get_offset_encoding()
+	local params = vim.lsp.util.make_position_params(winid, position_encoding) 
 	vim.lsp.buf_request(0, "textDocument/typeDefinition", params, function(_, result, _, _)
-		jump_to_location(result, "type definition")
+		jump_to_location(result, "type definition", position_encoding)
 	end)
 end
 

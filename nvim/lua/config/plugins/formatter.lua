@@ -45,6 +45,15 @@ require("formatter").setup({
 				}
 			end,
 		},
+		cpp = {
+			function()
+				return {
+					exe = "clang-format",
+					args = { "--assume-filename=" .. vim.api.nvim_buf_get_name(0) },
+					stdin = true,
+				}
+			end,
+		},
 		solidity = {
 			function () 
 				return {
@@ -54,7 +63,16 @@ require("formatter").setup({
 				}
 			end
 		
-		}
+		},
+		javascript = {
+			function()
+				return {
+					exe = "npx",
+					args = { "prettier --stdin-filepath", vim.api.nvim_buf_get_name(0) },
+					stdin = true,
+				}
+			end,
+		},
 	},
 })
 
