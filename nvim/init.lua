@@ -12,6 +12,9 @@ require("config.lsp.others")
 -- configure nvim-tree
 require("config.plugins.nvim-tree")
 
+-- configure codeql
+require("config.plugins.codeql")
+
 -- configure cmp and hover behavior
 require("config.plugins.cmp")
 

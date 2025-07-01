@@ -4,16 +4,16 @@ return {
 		event = "VeryLazy",
 		version = false, -- Never set this value to "*"! Never!
 		opts = {
-			-- add any opts here
-			-- for example
-			provider = "openai",
-			openai = {
-				endpoint = "https://litellm-proxy-153298433405.us-east1.run.app/",
-				model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
-				timeout = 30000, -- Timeout in milliseconds, increase this for reasoning models
-				temperature = 0,
-				max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
-				--reasoning_effort = "medium", -- low|medium|high, only used for reasoning models
+			providers = {
+				claude = {
+					endpoint = os.getenv("ANTHROPIC_URL"),
+					api_key = os.getenv("ANTHROPIC_API_KEY"),
+					model = "claude-sonnet-4-20250514",
+					extra_request_body = {
+						temperature = 0.75,
+						max_tokens = 4096,
+					},
+				},
 			},
 		},
 		-- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
@@ -30,7 +30,6 @@ return {
 			"hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
 			"ibhagwan/fzf-lua", -- for file_selector provider fzf
 			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-			"zbirenbaum/copilot.lua", -- for providers='copilot'
 			{
 				-- support for image pasting
 				"HakonHarnes/img-clip.nvim",
@@ -57,17 +56,36 @@ return {
 				ft = { "markdown", "Avante" },
 			},
 		},
+		config = {
+			-- system_prompt as function ensures LLM always has latest MCP server state
+			-- This is evaluated for every message, even in existing chats
+			system_prompt = function()
+				local hub = require("mcphub").get_hub_instance()
+				return hub and hub:get_active_servers_prompt() or ""
+			end,
+			-- Using function prevents requiring mcphub before it's loaded
+			custom_tools = function()
+				return {
+					require("mcphub.extensions.avante").mcp_tool(),
+				}
+			end,
+		},
 	},
 	{
-		"CopilotC-Nvim/CopilotChat.nvim",
-		branch = "main",
+		"ravitemer/mcphub.nvim",
 		dependencies = {
-			{ "github/copilot.vim" },
-			{ "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
+			"nvim-lua/plenary.nvim",
 		},
-		build = "make tiktoken", -- Only on MacOS or Linux
-		opts = {
-			debug = true, -- Enable debugging
+		build = "npm install -g mcp-hub@latest", -- Installs `mcp-hub` node binary globally
+		config = {
+			extensions = {
+				avante = {
+					make_slash_commands = true, -- make /slash commands from MCP server prompts
+				},
+			},
 		},
+	},
+	{
+		"github/copilot.vim",
 	},
 }
