@@ -18,10 +18,10 @@ require("config.plugins.codeql")
 -- configure cmp and hover behavior
 require("config.plugins.cmp")
 
--- configure copilot
-require("config.plugins.copilot")
+-- configure ai related tools 
+require("config.plugins.ai")
 
--- configure xrefs 
+-- configure xrefs
 require("config.plugins.xrefs")
 
 -- configure formatter

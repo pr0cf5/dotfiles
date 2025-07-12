@@ -1,6 +1,6 @@
 return {
-	{
-		"mhartington/formatter.nvim",
-		dependencies = {},
-	},
+   {
+      "mhartington/formatter.nvim",
+      dependencies = {},
+   },
 }
