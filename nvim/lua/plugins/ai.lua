@@ -4,7 +4,7 @@ return {
       event = "VeryLazy",
       version = false, -- Never set this value to "*"! Never!
       -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-      build = "make BUILD_FROM_SOURCE=true",
+      build = "make",
       -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
       opts = {
          provider = "litellm",
