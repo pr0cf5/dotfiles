@@ -82,6 +82,15 @@ require("formatter").setup({
             }
          end,
       },
+      typescript = {
+         function()
+            return {
+               exe = "npx",
+               args = { "prettier --stdin-filepath", vim.api.nvim_buf_get_name(0) },
+               stdin = true,
+            }
+         end,
+      },
    },
 })
 

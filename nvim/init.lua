@@ -8,6 +8,7 @@ require("config.core")
 require("config.lsp.python")
 require("config.lsp.solidity")
 require("config.lsp.others")
+require("config.lsp.typescript")
 
 -- configure nvim-tree
 require("config.plugins.nvim-tree")
