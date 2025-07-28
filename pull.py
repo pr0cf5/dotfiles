@@ -17,7 +17,7 @@ def sync_nvim():
     
     if dest.exists():
         shutil.rmtree(dest)
-    
+     
     shutil.copytree(src, dest)
 
 def sync_tmux():
@@ -27,6 +27,18 @@ def sync_tmux():
     
     if src.exists():
         shutil.copy2(src, dest)
+    else:
+        print(f"Warning: {src} does not exist, skipping sync")
+
+def sync_claude():
+    """Sync Claude config from home to dotfiles repo"""
+    src = Path.home() / ".claude.json"
+    dest = Path.cwd() / ".claude.json"
+    
+    if src.exists():
+        shutil.copy(src, dest)
+    else:
+        print(f"Warning: {src} does not exist, skipping sync")
 
 def main():
     repo_name = Path.cwd().name
@@ -37,8 +49,9 @@ def main():
     
     sync_nvim()
     sync_tmux()
+    sync_claude()
     
-    subprocess.run(["git", "add", "nvim", ".tmux.conf"], check=True)
+    subprocess.run(["git", "add", "nvim", ".tmux.conf", ".claude.json"], check=True)
     subprocess.run(["git", "commit"], check=True)
 
 if __name__ == "__main__":
