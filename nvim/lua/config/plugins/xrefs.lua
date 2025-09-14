@@ -17,8 +17,21 @@ local function jump_to_location(result, method, position_encoding)
 
    local location = result[1]
    local uri = location.uri or location.targetUri
-   local opts = { focus = true, reuse_win = true }
-   vim.lsp.util.show_document(result[1], position_encoding, opts)
+
+   -- Get current buffer's file path
+   local current_buf = vim.api.nvim_get_current_buf()
+   local current_file = vim.api.nvim_buf_get_name(current_buf)
+   local current_uri = vim.uri_from_fname(current_file)
+
+   -- Check if jumping to a different file
+   if uri ~= current_uri then
+      -- Open in new window for cross-file jumps
+      vim.cmd("split")
+      vim.lsp.util.show_document(result[1], position_encoding, { focus = true, reuse_win = true })
+   else
+      -- Reuse current window for same-file jumps
+      vim.lsp.util.show_document(result[1], position_encoding, { focus = true, reuse_win = true })
+   end
 end
 
 -- Jump to definition, opening a new tab if needed
